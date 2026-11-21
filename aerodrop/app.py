@@ -26,6 +26,7 @@ from fastapi.staticfiles import StaticFiles
 from starlette.background import BackgroundTask
 
 from .config import Settings
+from .discovery import Discovery
 from .hub import Hub
 from .net import lan_addresses, qr_svg
 from .storage import (
@@ -43,7 +44,7 @@ from .storage import (
 )
 
 STATIC_DIR = Path(__file__).parent / "static"
-VERSION = "1.0.0"
+VERSION = "1.1.0"
 CHUNK = 256 * 1024
 PROGRESS_INTERVAL = 0.15
 
@@ -90,6 +91,20 @@ def create_app(settings: Settings) -> FastAPI:
     app = FastAPI(title="AeroDrop", version=VERSION, docs_url=None, redoc_url=None)
     app.state.settings = settings
     app.state.hub = hub
+    app.state.discovery = Discovery(
+        name=settings.device_name,
+        port=settings.port,
+        locked=bool(settings.pin),
+        readonly=settings.readonly,
+    )
+
+    @app.on_event("startup")
+    async def start_discovery() -> None:
+        app.state.discovery.start()
+
+    @app.on_event("shutdown")
+    async def stop_discovery() -> None:
+        app.state.discovery.stop()
 
     # ---------------------------------------------------------------- auth
     def authorized(request: Request) -> bool:
@@ -171,6 +186,11 @@ def create_app(settings: Settings) -> FastAPI:
             "urls": urls,
             "clients": hub.count,
         }
+
+    @app.get("/api/peers")
+    async def peers() -> dict:
+        """Appareils AeroDrop visibles sur le même réseau local."""
+        return {"peers": app.state.discovery.peers()}
 
     @app.post("/api/login")
     async def login(request: Request, response: Response) -> dict:

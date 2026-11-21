@@ -4,6 +4,7 @@ Application de partage de fichiers et dossiers sur le réseau local. AeroDrop ne
 
 ## Points forts
 
+- Détection automatique des autres AeroDrop du même réseau : ouvre l'appareil voulu d'un clic, sans saisir d'adresse IP.
 - Interface desktop sombre, fluide et responsive ; elle reste agréable sur PC et mobile.
 - Envoi de fichiers et de dossiers complets par sélection ou glisser-déposer.
 - Téléchargement de dossiers en `.zip`, aperçu des images, vidéos, audio, PDF et textes.
@@ -51,7 +52,7 @@ Fenêtre desktop, pour partager un dossier précis avec un code :
 aerodrop-desktop ~/Documents/Partage --pin 2734 --name "PC Abdoul"
 ```
 
-Depuis les autres PC du même réseau, ouvre l'adresse affichée par AeroDrop dans Chrome, ou scanne le QR code. Aucune installation n'est nécessaire sur les PC qui reçoivent ou envoient via le navigateur.
+Sur chaque PC, ouvre AeroDrop puis **Appareils à proximité** : les autres PC du même Wi-Fi ou réseau Ethernet apparaissent automatiquement, sans adresse à recopier. Clique sur un appareil pour ouvrir son partage et envoyer ou recevoir des fichiers. Le QR code et l'adresse affichée restent disponibles pour les téléphones et comme solution de secours.
 
 Mode lecture seule :
 

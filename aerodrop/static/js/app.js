@@ -30,6 +30,7 @@ const state = {
   transfers: new Map(),
   own: new Set(),
   clients: 1,
+  peers: [],
   locked: false,
   readonly: false,
   lastLoad: 0,
@@ -204,6 +205,17 @@ async function loadInfo() {
   if (state.locked) showLock();
   else hideLock();
   applyReadonly();
+}
+
+async function loadPeers() {
+  try {
+    const data = await api("/api/peers");
+    state.peers = data.peers || [];
+    $("#peerCount").textContent = String(state.peers.length);
+    return state.peers;
+  } catch {
+    return state.peers;
+  }
 }
 
 function renderStorage(disk) {
@@ -1199,6 +1211,43 @@ async function showQr() {
   });
 }
 
+/* ------------------------------------------------------------ appareils */
+
+function peerMode(peer) {
+  if (peer.locked) return "Code requis";
+  if (peer.readonly) return "Lecture seule";
+  return "Prêt à recevoir";
+}
+
+async function showDevices() {
+  const node = openModal(
+    `<h3>Appareils à proximité</h3>
+     <p>Les AeroDrop ouverts sur le même Wi-Fi ou réseau Ethernet apparaissent automatiquement.</p>
+     <div class="peer-list" id="peerList"><div class="peer-empty">Recherche des appareils…</div></div>
+     <div class="modal-actions"><button class="btn ghost" data-refresh>${icon("refresh")}Actualiser</button><button class="btn primary" data-close>Fermer</button></div>`,
+    { wide: true }
+  );
+  const list = $("#peerList", node);
+
+  const renderPeers = async () => {
+    const peers = await loadPeers();
+    list.innerHTML = peers.length
+      ? peers.map((peer) => `<button class="peer" data-peer-url="${esc(peer.url)}">
+          <span class="peer-icon">${icon("devices")}</span>
+          <span class="peer-main"><strong>${esc(peer.name)}</strong><small>${esc(peerMode(peer))}</small></span>
+          <span class="peer-open">Ouvrir ${icon("chevron")}</span>
+        </button>`).join("")
+      : `<div class="peer-empty">Aucun appareil détecté pour le moment.<br><small>Ouvre AeroDrop sur l’autre PC et vérifie qu’ils sont sur le même réseau.</small></div>`;
+  };
+  await renderPeers();
+  node.addEventListener("click", (event) => {
+    const peer = event.target.closest("[data-peer-url]");
+    if (peer) location.assign(peer.dataset.peerUrl);
+    if (event.target.closest("[data-refresh]")) renderPeers();
+    if (event.target.closest("[data-close]")) closeModal();
+  });
+}
+
 /* ------------------------------------------------------------ lock */
 
 function showLock() {
@@ -1282,6 +1331,7 @@ $$(".nav-item").forEach((btn) => {
       $transferList.classList.remove("hidden");
     }
     if (action === "qr") showQr();
+    if (action === "devices") showDevices();
     if (action === "theme") {
       const next = document.documentElement.dataset.theme === "dark" ? "light" : "dark";
       applyTheme(next);
@@ -1331,6 +1381,7 @@ async function init() {
 
   try {
     await loadInfo();
+    await loadPeers();
     if (state.locked) return;
     await load(state.path, { silent: true });
     connectSocket();
@@ -1342,3 +1393,5 @@ async function init() {
 }
 
 init();
+
+setInterval(() => loadPeers(), 3000);
