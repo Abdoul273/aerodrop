@@ -71,19 +71,20 @@ class Entry:
         }
 
 
-def _natural_key(text: str):
-    out: list[object] = []
+def _natural_key(text: str) -> list[tuple[int, int | str]]:
+    """Clé de tri naturel comparable, même entre noms texte et numériques."""
+    out: list[tuple[int, int | str]] = []
     buf = ""
     digits = False
     for ch in text.lower():
         is_digit = ch.isdigit()
         if buf and is_digit != digits:
-            out.append(int(buf) if digits else buf)
+            out.append((0, int(buf)) if digits else (1, buf))
             buf = ""
         buf += ch
         digits = is_digit
     if buf:
-        out.append(int(buf) if digits else buf)
+        out.append((0, int(buf)) if digits else (1, buf))
     return out
 
 

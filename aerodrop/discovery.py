@@ -76,6 +76,21 @@ class Discovery:
             peers = list(self._peers.values())
         return [peer.as_dict() for peer in sorted(peers, key=lambda peer: peer.name.casefold())]
 
+    def peer(self, peer_id: str) -> Peer | None:
+        """Retourne un appareil encore présent, identifié par son annonce."""
+        cutoff = time.monotonic() - PEER_TTL
+        with self._lock:
+            peer = self._peers.get(peer_id)
+        return peer if peer and peer.seen_at >= cutoff else None
+
+    def reachable(self, peer: Peer, timeout: float = 0.8) -> bool:
+        """Vérifie vite que le serveur HTTP annoncé accepte bien les connexions."""
+        try:
+            with socket.create_connection((peer.host, peer.port), timeout=timeout):
+                return True
+        except OSError:
+            return False
+
     def _payload(self) -> bytes:
         return json.dumps(
             {

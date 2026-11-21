@@ -192,6 +192,21 @@ def create_app(settings: Settings) -> FastAPI:
         """Appareils AeroDrop visibles sur le même réseau local."""
         return {"peers": app.state.discovery.peers()}
 
+    @app.get("/api/peers/{peer_id}/connect")
+    async def connect_peer(peer_id: str) -> dict:
+        """Valide un appareil détecté avant de diriger le navigateur vers lui."""
+        peer = app.state.discovery.peer(peer_id)
+        if peer is None:
+            raise HTTPException(404, "Cet appareil n'est plus visible sur le réseau")
+        reachable = await asyncio.to_thread(app.state.discovery.reachable, peer)
+        if not reachable:
+            raise HTTPException(
+                503,
+                "Cet appareil est détecté, mais AeroDrop n'accepte pas encore les connexions. "
+                "Ouvre AeroDrop sur ce PC et autorise le port 8080 dans son pare-feu.",
+            )
+        return {"url": peer.as_dict()["url"]}
+
     @app.post("/api/login")
     async def login(request: Request, response: Response) -> dict:
         body = await request.json()

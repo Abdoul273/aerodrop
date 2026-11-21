@@ -1232,7 +1232,7 @@ async function showDevices() {
   const renderPeers = async () => {
     const peers = await loadPeers();
     list.innerHTML = peers.length
-      ? peers.map((peer) => `<button class="peer" data-peer-url="${esc(peer.url)}">
+      ? peers.map((peer) => `<button class="peer" data-peer-id="${esc(peer.id)}">
           <span class="peer-icon">${icon("devices")}</span>
           <span class="peer-main"><strong>${esc(peer.name)}</strong><small>${esc(peerMode(peer))}</small></span>
           <span class="peer-open">Ouvrir ${icon("chevron")}</span>
@@ -1240,9 +1240,18 @@ async function showDevices() {
       : `<div class="peer-empty">Aucun appareil détecté pour le moment.<br><small>Ouvre AeroDrop sur l’autre PC et vérifie qu’ils sont sur le même réseau.</small></div>`;
   };
   await renderPeers();
-  node.addEventListener("click", (event) => {
-    const peer = event.target.closest("[data-peer-url]");
-    if (peer) location.assign(peer.dataset.peerUrl);
+  node.addEventListener("click", async (event) => {
+    const peer = event.target.closest("[data-peer-id]");
+    if (peer) {
+      peer.disabled = true;
+      try {
+        const data = await api(`/api/peers/${encodeURIComponent(peer.dataset.peerId)}/connect`);
+        location.assign(data.url);
+      } catch (error) {
+        toast(error.message, "error");
+        peer.disabled = false;
+      }
+    }
     if (event.target.closest("[data-refresh]")) renderPeers();
     if (event.target.closest("[data-close]")) closeModal();
   });
