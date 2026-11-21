@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=AeroDrop
+Comment=Partage de fichiers en réseau local
+Exec=aerodrop-desktop
+Icon=folder-publicshare
+Terminal=false
+Categories=Network;FileTransfer;
+Keywords=partage;fichiers;réseau;local;
