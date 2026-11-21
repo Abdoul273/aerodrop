@@ -11,12 +11,12 @@ Application de partage de fichiers et dossiers sur le réseau local. AeroDrop ne
 - Suivi en direct des envois/téléchargements et QR code pour ouvrir le partage sur un autre appareil.
 - Code PIN optionnel, mode lecture seule et confinement strict au dossier choisi.
 
-## Installation automatique (Arch Linux / Fish)
+## Installation automatique (Arch Linux)
 
-```fish
+```bash
 git clone https://github.com/Abdoul273/aerodrop.git
 cd aerodrop
-fish installer.fish
+./installer.sh
 ```
 
 Le script installe les dépendances, crée `~/Partage-AeroDrop`, et ajoute **AeroDrop** au menu des applications. Clique ensuite sur AeroDrop : la fenêtre desktop s'ouvre et partage ce dossier. Sur les autres PC, ouvre l'adresse ou le QR affiché ; aucune installation n'est requise.
@@ -33,7 +33,7 @@ Pour l'ajouter au menu des applications Linux :
 ```fish
 mkdir -p ~/.local/share/applications
 cp packaging/aerodrop.desktop ~/.local/share/applications/
-cp packaging/aerodrop-lancer.fish ~/.local/bin/aerodrop-lancer
+cp packaging/aerodrop-lancer ~/.local/bin/aerodrop-lancer
 chmod +x ~/.local/bin/aerodrop-lancer
 ```
 
