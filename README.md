@@ -54,6 +54,8 @@ aerodrop-desktop ~/Documents/Partage --pin 2734 --name "PC Abdoul"
 
 Sur chaque PC, ouvre AeroDrop puis **Appareils à proximité** : les autres PC du même Wi-Fi ou réseau Ethernet apparaissent automatiquement, sans adresse à recopier. Clique sur un appareil pour ouvrir son partage et envoyer ou recevoir des fichiers. Le QR code et l'adresse affichée restent disponibles pour les téléphones et comme solution de secours.
 
+Si un appareil est détecté mais refuse la connexion, laisse AeroDrop ouvert sur cet appareil et autorise son port affiché (8080 par défaut) dans le pare-feu. Les deux PC doivent être sur le même réseau local ; un Wi-Fi invité ou l'isolation des appareils empêche les transferts directs.
+
 Mode lecture seule :
 
 ```fish

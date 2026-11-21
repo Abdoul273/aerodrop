@@ -44,7 +44,7 @@ from .storage import (
 )
 
 STATIC_DIR = Path(__file__).parent / "static"
-VERSION = "1.1.0"
+VERSION = "1.1.1"
 CHUNK = 256 * 1024
 PROGRESS_INTERVAL = 0.15
 
@@ -203,7 +203,7 @@ def create_app(settings: Settings) -> FastAPI:
             raise HTTPException(
                 503,
                 "Cet appareil est détecté, mais AeroDrop n'accepte pas encore les connexions. "
-                "Ouvre AeroDrop sur ce PC et autorise le port 8080 dans son pare-feu.",
+                f"Ouvre AeroDrop sur ce PC et autorise le port {peer.port} dans son pare-feu.",
             )
         return {"url": peer.as_dict()["url"]}
 
