@@ -2,7 +2,7 @@
 Type=Application
 Name=AeroDrop
 Comment=Partage de fichiers en réseau local
-Exec=aerodrop-desktop
+Exec=aerodrop-lancer
 Icon=folder-publicshare
 Terminal=false
 Categories=Network;FileTransfer;
